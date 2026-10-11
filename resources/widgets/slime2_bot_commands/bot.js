@@ -203,6 +203,18 @@ async function handleChatMessage(data, eventDate) {
 						: messageArgument,
 				);
 			}
+
+			if (reply.includes(`{channel.name}`)) {
+				reply = reply.replaceAll(`{channel.name}`, messageArguments[0]);
+			}
+			if (reply.includes(`{channel.category}`)) {
+				const channelCategory = await getChannelCategory(messageArguments[0]);
+				if (channelCategory) {
+					reply = reply.replaceAll(`{channel.category}`, channelCategory);
+				} else {
+					reply = reply.replaceAll(`{channel.category}`, '');
+				}
+			}
 		}
 
 		if (argumentError) {
@@ -322,6 +334,19 @@ async function sendChatMessage(
 		broadcaster_id: Widget.readAccount.serviceId,
 		message,
 		reply_parent_message_id: parentMessageId,
+	});
+}
+/**
+ * Returns string of channel category, or `null` if the channel is not found or
+ * has no category set.
+ *
+ * @param {string} channelName
+ * @returns {Promise<null | string>}
+ */
+async function getChannelCategory(channelName) {
+	return sendRequest('get-twitch-channel-category', {
+		account_id: Widget.readAccount.id,
+		channel_name: channelName,
 	});
 }
 

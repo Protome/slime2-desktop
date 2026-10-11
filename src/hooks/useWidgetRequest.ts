@@ -189,6 +189,18 @@ export default function useWidgetRequest() {
 						respond(chatMessageResponse.data.data[0]);
 						break;
 					}
+					case 'get-twitch-channel-category': {
+						const { account_id, channel_name } = request.payload;
+						const account = getValidAccount(account_id, {
+							service: 'twitch',
+							type: 'read',
+						});
+						const user = await twitchApi.getUserByLogin(account.id, channel_name);
+						const broadcaster_id = user.data.data[0]!.id;
+						const channel = await twitchApi.getChannel(account.id, broadcaster_id);
+						respond(channel.data.data[0]!.game_name);
+						break;
+					}
 					case 'get-betterttv-user': {
 						const { platform, account_id } = request.payload;
 						const account = getValidAccount(account_id);
@@ -311,6 +323,14 @@ const AccountRequestZ = z.object({
 	}),
 });
 
+const ChannelRequestZ = z.object({
+	request_type: z.literal('get-twitch-channel-category'),
+	payload: z.object({
+		account_id: z.string(),
+		channel_name: z.string(),
+	}),
+});
+
 const ChatMessageRequestZ = z.object({
 	request_type: z.literal('post-twitch-chat-message'),
 	payload: z.object({
@@ -336,6 +356,7 @@ const WidgetRequestZ = z.intersection(
 		SystemProxiedMessageRequestZ,
 		FollowDateRequestZ,
 		AccountRequestZ,
+		ChannelRequestZ,
 		PlatformRequestZ,
 		ChatMessageRequestZ,
 		ValuesRequestZ,
