@@ -14,6 +14,22 @@ const twitchApi = {
 		);
 	},
 
+	async getUserByLogin(accountId: string, accountName: string) {
+		return twitchApiGet<Twitch.ApiResponse.GetUser>(
+			'/users',
+			accountId,
+			{ params: { login: accountName } },
+		);
+	},
+
+	async getChannel(accountId: string, broadcasterId: string) {
+		return twitchApiGet<Twitch.ApiResponse.GetChannel>(
+			'/channels',
+			accountId,
+			{ params: { broadcaster_id: broadcasterId } },
+		);
+	},
+
 	async createEventSub(
 		account: Account,
 		sessionId: string,
@@ -111,6 +127,8 @@ const twitchApi = {
 			},
 		);
 	},
+
+
 };
 
 export default twitchApi;

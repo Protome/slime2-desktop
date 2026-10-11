@@ -665,6 +665,14 @@ namespace Twitch {
 			}[];
 		};
 
+		type GetChannel = {
+			data: {
+				broadcaster_id: string;
+				broadcaster_login: string;
+				game_name: string;
+			}[];
+		}
+
 		type CreateEventSub = {
 			data: {
 				id: string;
